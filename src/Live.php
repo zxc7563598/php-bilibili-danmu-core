@@ -189,4 +189,47 @@ class Live
             "Origin: https://live.bilibili.com/" . $room_id,
         ], 10, $cookie);
     }
+
+    /**
+     * 获取直播间在线榜
+     * 
+     * @param int $uid 主播uid
+     * @param int $room_id 主播房间号
+     * @param string $cookie 用户cookie
+     * 
+     * @return array {online_num: 在线人数`int`, online_item: 每个在线的信息`array`}
+     * @throws Exception 
+     */
+    public static function getOnlineGoldRank(int $uid, int $room_id, string $cookie): array
+    {
+        self::init();
+        $getOnlineGoldRank = HttpClient::sendGetRequest(self::$config['getOnlineGoldRank'] . '?ruid=' . $uid . '&roomId=' . $room_id . '&page=1&pageSize=5000', [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com",
+        ], 10, $cookie);
+        if ($getOnlineGoldRank['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus']);
+        }
+        $jsonData = json_decode($getOnlineGoldRank['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code']) || $jsonData['code'] != 0) {
+            throw new \Exception("高能榜获取失败");
+        }
+        $onlineNum = $jsonData['data']['onlineNum'];
+        $onlineItem = [];
+        foreach ($jsonData['data']['OnlineRankItem'] as $item) {
+            $onlineItem[] = [
+                'rank' => $item['userRank'], // 排名
+                'uid' => $item['uid'], // uid
+                'name' => $item['name'], // 名称
+                'score' => $item['score'] // 贡献
+            ];
+        }
+        return [
+            'online_num' => $onlineNum,
+            'online_item' => $onlineItem
+        ];
+    }
 }
