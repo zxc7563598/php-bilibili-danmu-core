@@ -1,6 +1,13 @@
 {
     "name": "hejunjie/bililive",
+    "description": "B站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，包括登录、直播间信息流加密/解密、以及相关的关键方法。适合集成到需要对接 Bilibili 直播间的项目中（弹幕监控，礼物答谢、定时广告、关注感谢，自动回复）",
     "type": "library",
+    "keywords": [
+        "php",
+        "bilibili",
+        "bili-live",
+        "danmu"
+    ],
     "license": "MIT",
     "autoload": {
         "psr-4": {
@@ -13,5 +20,9 @@
             "email": "junjie.he.925@gmail.com"
         }
     ],
-    "require": {}
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.0",
+        "ext-brotli": "*"
+    }
 }
