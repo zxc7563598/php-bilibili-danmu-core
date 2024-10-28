@@ -47,7 +47,7 @@ class Live
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
         }
-        return !empty($jsonData['data']['room_id']) ? $jsonData['data']['room_id'] : 0;
+        return !empty($jsonData['data']['room_id']) ? $jsonData['data']['room_id'] : $room_id;
     }
 
     /**
