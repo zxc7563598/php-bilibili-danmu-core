@@ -1,7 +1,7 @@
 
 ## 发行说明
 
-B站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，包括登录、直播间信息流加密/解密、以及相关的关键方法。适合集成到需要对接 Bilibili 直播间的项目中（弹幕监控，礼物答谢、定时广告、关注感谢，自动回复）
+B站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，包括登录、直播间信息流加密/解密、以及相关的关键方法。适合集成到需要对接 Bilibili 直播间的项目中（弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等）
 
 
 ## 安装指南
@@ -56,7 +56,11 @@ composer require hejunjie/bililive
 
 ---
 
-###
+### Workerman实现B站直播信息流的监听
+
+> 基础实例，代码自行调整
+
+> 弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等功能于 ` onMessageReceived ` 方法中自行实现
 
 ```php
 <?php
@@ -179,11 +183,17 @@ class Bilibili
         // 发送认证包
         $con->send(Bililive\WebSocket::buildAuthPayload($roomId, $token, $this->cookie));
 
-        // 设置心跳包发送定时器，每30秒发送一次
-        $interval = 30;
-        Timer::add($interval, function () use ($con) {
+        // 设置 websocket 心跳包发送定时器，每30秒发送一次
+        Timer::add(30, function () use ($con) {
             if ($con->getStatus() === AsyncTcpConnection::STATUS_ESTABLISHED) {
                 $con->send(Bililive\WebSocket::buildHeartbeatPayload());
+            }
+        });
+        
+        // 设置 http 心跳包发送定时器，每60秒发送一次
+        Timer::add(60, function () use ($con, $roomId) {
+            if ($con->getStatus() === AsyncTcpConnection::STATUS_ESTABLISHED) {
+                $con->send(Bililive\Live::reportLiveHeartbeat($roomId, $this->cookie));
             }
         });
     }
