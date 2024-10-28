@@ -1,0 +1,17 @@
+{
+    "name": "hejunjie/bililive",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Hejunjie\\Bililive\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "何俊杰",
+            "email": "junjie.he.925@gmail.com"
+        }
+    ],
+    "require": {}
+}
