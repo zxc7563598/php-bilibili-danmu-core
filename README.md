@@ -37,6 +37,7 @@ composer require hejunjie/bililive
 | Live::getInitialWebSocketUrl() | 获取直播间连接信息 |
 | Live::sendMsg() | 发送弹幕 |
 | Live::reportLiveHeartbeat() | web端直播心跳上报(60秒一次) |
+| Live::getOnlineGoldRank() | 获取直播间在线榜 |
 
 ### WebSocket
 

@@ -9,5 +9,6 @@ return [
     'sendMsg' => 'https://api.live.bilibili.com/msg/send',
     'getRealRoomId' => 'https://api.live.bilibili.com/room/v1/Room/get_info',
     'webHeartBeat' => 'https://live-trace.bilibili.com/xlive/rdata-interface/v1/heartbeat/webHeartBeat',
-    'heartBeat' => 'https://api.live.bilibili.com/relation/v1/Feed/heartBeat'
+    'heartBeat' => 'https://api.live.bilibili.com/relation/v1/Feed/heartBeat',
+    'getOnlineGoldRank' => 'https://api.live.bilibili.com/xlive/general-interface/v1/rank/getOnlineGoldRank'
 ];
