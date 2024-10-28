@@ -50,6 +50,6 @@ composer require hejunjie/bililive
 
 在实时通讯和弹幕系统的开发中，常见的实现方案多基于 Java、Python 或 Go 语言，但少有采用 PHP 的项目。
 
-传统的 PHP-FPM 架构确实不适合即时通讯的高并发需求，但随着 Workerman、Swoole 等优秀常驻进程方案的出现，PHP 在这一领域的潜力逐渐显现。
+传统的 PHP-FPM 架构确实不太适合即时通讯一类的方向，但随着 Workerman、Swoole 等优秀常驻进程方案的出现，PHP 在这一领域的潜力逐渐显现。
 
 基于此，我决定创建这样一个库，以 PHP 的方式来实现 B站的弹幕连接，希望给需要用 PHP 做类似弹幕姬项目的朋友提供一个简单方便的工具
