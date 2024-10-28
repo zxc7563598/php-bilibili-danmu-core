@@ -22,7 +22,7 @@ class WebSocket
      * 
      * @return string 需要发送的数据
      */
-    public static function buildAuthPacket(int $room_id, string $token, string $cookie): string
+    public static function buildAuthPayload(int $room_id, string $token, string $cookie): string
     {
         // 通过cookie获取用户信息
         $uid = Processing::getUidFromCookie($cookie);
@@ -47,7 +47,7 @@ class WebSocket
      * 
      * @return string 需要发送的数据
      */
-    public static function buildHeartbeatPacket(): string
+    public static function buildHeartbeatPayload(): string
     {
         $packet = '[object Object]';
         $buildHeader = Processing::buildHeader(strlen($packet), 1, 2);
@@ -55,13 +55,13 @@ class WebSocket
     }
 
     /**
-     * websocket 响应解密
+     * 解构响应数据包
      * 
      * @param mixed $data 
      * 
      * @return array 
      */
-    public static function decryptWebSocketResponse($data): array
+    public static function parseResponsePayload($data): array
     {
         $body = Processing::unpack($data);
         if (isset($body['protocol_version'])) {
