@@ -3,6 +3,7 @@
 return [
     'qrcodeGenerate' => 'https://passport.bilibili.com/x/passport-login/web/qrcode/generate',
     'qrcodePoll' => 'https://passport.bilibili.com/x/passport-login/web/qrcode/poll',
+    'getUserInfo' => 'https://api.bilibili.com/x/web-interface/nav',
     'getDanmuInfo' => 'https://api.live.bilibili.com/xlive/web-room/v1/index/getDanmuInfo',
     'getBuvid' => 'https://api.bilibili.com/x/frontend/finger/spi',
     'getInfoByUser' => 'https://api.live.bilibili.com/xlive/web-room/v1/index/getInfoByUser',
