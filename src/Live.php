@@ -26,11 +26,10 @@ class Live
     /**
      * 获取真实房间号
      * 
-     * @param int $room_id 房间号
+     * @param int $room_id 房间号（可以是短号）
      * @param string $cookie 用户cookie
      * 
      * @return int 真实房间号
-     * 
      * @throws Exception 
      */
     public static function getRealRoomId(int $room_id, string $cookie): int
@@ -48,6 +47,45 @@ class Live
             throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
         }
         return !empty($jsonData['data']['room_id']) ? $jsonData['data']['room_id'] : $room_id;
+    }
+
+    /**
+     * 获取直播间基本信息
+     * 
+     * @param int $room_id 房间号（可以是短号）
+     * @param string $cookie 用户cookie
+     * 
+     * @return array {code:接口状态`int`, msg:失败后的信息`string`, data:成功后的数据`array`} 
+     * @throws Exception 
+     */
+    public static function getRealRoomInfo(int $room_id, string $cookie): array
+    {
+        self::init();
+        $getRealRoomInfo = HttpClient::sendGetRequest(self::$config['getRealRoomId'] . '?room_id=' . $room_id, [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com",
+        ], 10, $cookie);
+        if ($getRealRoomInfo['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getRealRoomInfo['httpStatus']);
+        }
+        $jsonData = json_decode($getRealRoomInfo['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        return [
+            'code' => $jsonData['code'],
+            'msg' => $jsonData['msg'],
+            'data' => [
+                'uid' => isset($jsonData['data']['uid']) ? $jsonData['data']['uid'] : 0, // uid
+                'room_id' => isset($jsonData['data']['room_id']) ? $jsonData['data']['room_id'] : 0, // 房间号
+                'attention' => isset($jsonData['data']['attention']) ? $jsonData['data']['attention'] : 0, // 关注数量
+                'online' => isset($jsonData['data']['online']) ? $jsonData['data']['online'] : 0, // 观看人数
+                'live_status' => isset($jsonData['data']['live_status']) ? $jsonData['data']['live_status'] : 0, // 直播状态，0=未开播,1=直播中,2=轮播中
+                'title' => isset($jsonData['data']['title']) ? $jsonData['data']['title'] : '', // 直播间标题
+                'live_time' => isset($jsonData['data']['live_time']) ? $jsonData['data']['live_time'] : '', // 直播开始时间
+                'keyframe' => isset($jsonData['data']['keyframe']) ? $jsonData['data']['keyframe'] : '' // 关键帧
+            ]
+        ];
     }
 
     /**
