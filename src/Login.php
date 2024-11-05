@@ -91,6 +91,34 @@ class Login
     }
 
     /**
+     * 获取用户基本信息
+     * @param string $cookie 用户登录cookie
+     * 
+     * @return array {is_login:是否登录`bool`, uid:用户uid`int`, uname:用户名称`string`, face:用户头像URL`string`} 
+     */
+    public static function getUserInfo(string $cookie): array
+    {
+        self::init();
+        $getUserInfo = HttpClient::sendGetRequest(self::$config['getUserInfo'], [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com",
+        ], 10, $cookie);
+        if ($getUserInfo['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getUserInfo['httpStatus']);
+        }
+        $jsonData = json_decode($getUserInfo['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        return [
+            'is_login' => isset($jsonData['data']['isLogin']) ? $jsonData['data']['isLogin'] : false,
+            'uid' => isset($jsonData['data']['mid']) ? $jsonData['data']['mid'] : '',
+            'uname' => isset($jsonData['data']['uname']) ? $jsonData['data']['uname'] : '',
+            'face' => isset($jsonData['data']['face']) ? $jsonData['data']['face'] : ''
+        ];
+    }
+
+    /**
      * 获取buvid
      * 
      * @return array {buvid3:buvid3`string`, buvid4:buvid4`string`, b_nut:b_nut`int`} 
