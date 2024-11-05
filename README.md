@@ -15,37 +15,39 @@ composer require hejunjie/bililive
 
 ## 当前支持的方法列表
 
-|类|说明|
-|:----|:----|
-| Login | 登录相关方法 |
-| Live | 直播间相关方法 |
+| 类        | 说明                 |
+| :-------- | :------------------- |
+| Login     | 登录相关方法         |
+| Live      | 直播间相关方法       |
 | WebSocket | 直播间信息流相关方法 |
 
 ### 登录相关方法
 
-|方法|说明|
-|:----|:----|
-| Login::getQrcode() | 获取扫描二维码 |
-| Login::checkQrcode() | 验证登录信息 |
+| 方法                 | 说明             |
+| :------------------- | :--------------- |
+| Login::getQrcode()   | 获取扫描二维码   |
+| Login::checkQrcode() | 验证登录信息     |
+| Login::getUserInfo() | 获取用户基本信息 |
 
 
 ### 直播间相关方法
 
-|方法|说明|
-|:----|:----|
-| Live::getRealRoomId() | 获取真实房间号 |
-| Live::getInitialWebSocketUrl() | 获取直播间连接信息 |
-| Live::sendMsg() | 发送弹幕 |
-| Live::reportLiveHeartbeat() | web端直播心跳上报(60秒一次) |
-| Live::getOnlineGoldRank() | 获取直播间在线榜 |
+| 方法                           | 说明                        |
+| :----------------------------- | :-------------------------- |
+| Live::getRealRoomId()          | 获取真实房间号              |
+| Live::getRealRoomInfo()        | 获取直播间基本信息          |
+| Live::getInitialWebSocketUrl() | 获取直播间连接信息          |
+| Live::sendMsg()                | 发送弹幕                    |
+| Live::reportLiveHeartbeat()    | web端直播心跳上报(60秒一次) |
+| Live::getOnlineGoldRank()      | 获取直播间在线榜            |
 
 ### WebSocket
 
-|方法|说明|
-|:----|:----|
-| WebSocket::buildAuthPayload() | 构建认证包数据 |
+| 方法                               | 说明           |
+| :--------------------------------- | :------------- |
+| WebSocket::buildAuthPayload()      | 构建认证包数据 |
 | WebSocket::buildHeartbeatPayload() | 构建心跳包数据 |
-| WebSocket::parseResponsePayload() | 解构响应数据包 |
+| WebSocket::parseResponsePayload()  | 解构响应数据包 |
 
 ---
 
