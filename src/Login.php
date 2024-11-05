@@ -112,7 +112,7 @@ class Login
         }
         return [
             'is_login' => isset($jsonData['data']['isLogin']) ? $jsonData['data']['isLogin'] : false,
-            'uid' => isset($jsonData['data']['mid']) ? $jsonData['data']['mid'] : '',
+            'uid' => isset($jsonData['data']['mid']) ? $jsonData['data']['mid'] : 0,
             'uname' => isset($jsonData['data']['uname']) ? $jsonData['data']['uname'] : '',
             'face' => isset($jsonData['data']['face']) ? $jsonData['data']['face'] : ''
         ];
