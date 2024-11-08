@@ -133,7 +133,7 @@ class Live
      * @return array {mode:mode`int`, color:字体颜色`int`, length:长度`int`, bubble:bubble`int`}
      * @throws Exception 
      */
-    private static function getUserBarrageMsg(int $room_id, string $cookie): array
+    public static function getUserBarrageMsg(int $room_id, string $cookie): array
     {
         self::init();
         $getInfoByUser = HttpClient::sendGetRequest(self::$config['getInfoByUser'] . '?room_id=' . $room_id, [
