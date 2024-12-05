@@ -141,7 +141,7 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie);
         if ($getInfoByUser['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getInfoByUser['httpStatus']);
+            throw new \Exception('接口异常响应 httpStatus: ' . $getInfoByUser['httpStatus'] . "详情：" . json_encode($getInfoByUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getInfoByUser['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -194,14 +194,17 @@ class Live
                 'csrf' => $bili_jct
             ]), 10, $cookie);
             if ($sendMsg['httpStatus'] != 200) {
-                throw new \Exception('接口异常响应 httpStatus: ' . $sendMsg['httpStatus']);
+                throw new \Exception('接口异常响应 httpStatus: ' . $sendMsg['httpStatus'] . "详情：" . json_encode($sendMsg, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
             }
             $jsonData = json_decode($sendMsg['data'], true);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
             }
-            if (!isset($jsonData['code']) || $jsonData['code'] != 0) {
-                throw new \Exception("弹幕发送失败");
+            if (!isset($jsonData['code'])) {
+                throw new \Exception("弹幕发送失败, 无法获取数据");
+            }
+            if ($jsonData['code'] != 0) {
+                throw new \Exception("弹幕发送失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
             }
         }
     }
@@ -246,14 +249,17 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie);
         if ($getOnlineGoldRank['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus']);
+            throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus'] . ', 详情：' . json_encode($getOnlineGoldRank, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getOnlineGoldRank['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
         }
-        if (!isset($jsonData['code']) || $jsonData['code'] != 0) {
-            throw new \Exception("高能榜获取失败");
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("高能榜获取失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("高能榜获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
         $onlineNum = $jsonData['data']['onlineNum'];
         $onlineItem = [];
