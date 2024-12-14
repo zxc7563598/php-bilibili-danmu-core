@@ -61,6 +61,7 @@ class Live
     public static function getRealRoomInfo(int $room_id, string $cookie): array
     {
         self::init();
+        // 获取直播间信息
         $getRealRoomInfo = HttpClient::sendGetRequest(self::$config['getRealRoomId'] . '?room_id=' . $room_id, [
             "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
@@ -72,11 +73,28 @@ class Live
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
         }
+        // 获取主播个人信息
+        if (isset($jsonData['data']['uid'])) {
+            $getMasterInfo = HttpClient::sendGetRequest(self::$config['getMasterInfo'] . '?uid=' . $jsonData['data']['uid'], [
+                "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+                "Origin: https://live.bilibili.com",
+            ], 10, $cookie);
+            if ($getMasterInfo['httpStatus'] != 200) {
+                throw new \Exception('接口异常响应 httpStatus: ' . $getMasterInfo['httpStatus']);
+            }
+            $getMasterInfoData = json_decode($getMasterInfo['data'], true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+            }
+        }
+        // 返回数据
         return [
             'code' => $jsonData['code'],
             'msg' => $jsonData['msg'],
             'data' => [
                 'uid' => isset($jsonData['data']['uid']) ? $jsonData['data']['uid'] : 0, // uid
+                'uname' => isset($getMasterInfoData['data']['info']['uname']) ? $getMasterInfoData['data']['info']['uname'] : 0, // uname
+                'face' => isset($getMasterInfoData['data']['info']['face']) ? $getMasterInfoData['data']['info']['face'] : 0, // 头像
                 'room_id' => isset($jsonData['data']['room_id']) ? $jsonData['data']['room_id'] : 0, // 房间号
                 'attention' => isset($jsonData['data']['attention']) ? $jsonData['data']['attention'] : 0, // 关注数量
                 'online' => isset($jsonData['data']['online']) ? $jsonData['data']['online'] : 0, // 观看人数
