@@ -40,9 +40,9 @@ composer require hejunjie/bililive
 | Live::sendMsg()                | 发送弹幕                    |
 | Live::reportLiveHeartbeat()    | web端直播心跳上报(60秒一次) |
 | Live::getOnlineGoldRank()      | 获取直播间在线榜            |
-| Live::addSilentUser()          | 添加黑名单用户              |
-| Live::getSilentUserList()      | 获取直播间黑名单列表        |
-| Live::delSilentUser()          | 删除直播间黑名单用户        |
+| Live::addSilentUser()          | 直播间禁言用户              |
+| Live::getSilentUserList()      | 获取直播间禁言用户列表      |
+| Live::delSilentUser()          | 解除直播间禁言              |
 
 ### WebSocket
 
