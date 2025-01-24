@@ -294,4 +294,129 @@ class Live
             'online_item' => $onlineItem
         ];
     }
+
+    /**
+     * 添加黑名单用户
+     * 
+     * @param int $room_id 直播间房间号
+     * @param string $cookie 登录凭证
+     * @param int $uid 加入黑名单的uid
+     * @param string $msg 要禁言的弹幕内容
+     * 
+     * @return void 
+     */
+    public static function addSilentUser(int $room_id, string $cookie, int $uid, string $msg): void
+    {
+        self::init();
+        $bili_jct = Processing::getBiliJctFromCookie($cookie);
+        // 请求接口
+        $addSilentUser = HttpClient::sendPostRequest(self::$config['addSilentUser'], [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com/" . $room_id,
+            // "Content-type: application/x-www-form-urlencoded",
+            // "Accept: application/x-www-form-urlencoded"
+        ], http_build_query([
+            'room_id' => $room_id,
+            'tuid' => $uid,
+            'msg' => $msg,
+            'mobile_app' => 'web',
+            'csrf_token' => $bili_jct,
+            'csrf' => $bili_jct
+        ]), 10, $cookie);
+        if ($addSilentUser['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $addSilentUser['httpStatus'] . "详情：" . json_encode($addSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        $jsonData = json_decode($addSilentUser['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("添加黑名单失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("添加黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+    }
+
+    /**
+     * 获取直播间黑名单列表
+     * 
+     * @param int $room_id 直播间房间号
+     * @param string $cookie 登录凭证
+     * @param int $page 页码
+     * 
+     * @return array {total: 总条数`int`, total_page: 总页码`int`, data: 每个黑名单的信息`array`}
+     */
+    public static function getSilentUserList(int $room_id, string $cookie, int $page): array
+    {
+        self::init();
+        $bili_jct = Processing::getBiliJctFromCookie($cookie);
+        // 请求接口
+        $getSilentUserList = HttpClient::sendPostRequest(self::$config['getSilentUserList'], [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com/" . $room_id,
+            // "Content-type: application/x-www-form-urlencoded",
+            // "Accept: application/x-www-form-urlencoded"
+        ], http_build_query([
+            'room_id' => $room_id,
+            'ps' => $page,
+            'csrf_token' => $bili_jct,
+            'csrf' => $bili_jct
+        ]), 10, $cookie);
+        if ($getSilentUserList['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getSilentUserList['httpStatus'] . "详情：" . json_encode($getSilentUserList, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        $jsonData = json_decode($getSilentUserList['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code']) || !isset($jsonData['data'])) {
+            throw new \Exception("黑名单列表获取失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("黑名单列表获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        // 返回数据
+        return $jsonData['data'];
+    }
+
+    /**
+     * 删除直播间黑名单用户
+     * 
+     * @param int $room_id 直播间房间号
+     * @param string $cookie 登录凭证
+     * @param int $black_id 黑名单ID
+     * 
+     * @return void 
+     */
+    public static function delSilentUser(int $room_id, string $cookie, int $black_id): void
+    {
+        self::init();
+        $bili_jct = Processing::getBiliJctFromCookie($cookie);
+        // 请求接口
+        $delSilentUser = HttpClient::sendPostRequest(self::$config['delSilentUser'], [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://live.bilibili.com/" . $room_id,
+            // "Content-type: application/x-www-form-urlencoded",
+            // "Accept: application/x-www-form-urlencoded"
+        ], http_build_query([
+            'roomid' => $room_id,
+            'id' => $black_id,
+            'csrf_token' => $bili_jct,
+            'csrf' => $bili_jct
+        ]), 10, $cookie);
+        if ($delSilentUser['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $delSilentUser['httpStatus'] . "详情：" . json_encode($delSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        $jsonData = json_decode($delSilentUser['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("解除黑名单失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("解除黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+    }
 }
