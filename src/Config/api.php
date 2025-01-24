@@ -12,5 +12,8 @@ return [
     'webHeartBeat' => 'https://live-trace.bilibili.com/xlive/rdata-interface/v1/heartbeat/webHeartBeat',
     'heartBeat' => 'https://api.live.bilibili.com/relation/v1/Feed/heartBeat',
     'getOnlineGoldRank' => 'https://api.live.bilibili.com/xlive/general-interface/v1/rank/getOnlineGoldRank',
-    'getMasterInfo' => 'https://api.live.bilibili.com/live_user/v1/Master/info'
+    'getMasterInfo' => 'https://api.live.bilibili.com/live_user/v1/Master/info',
+    'addSilentUser' => 'https://api.live.bilibili.com/xlive/web-ucenter/v1/banned/AddSilentUser',
+    'getSilentUserList' => 'https://api.live.bilibili.com/xlive/web-ucenter/v1/banned/GetSilentUserList',
+    'delSilentUser' => 'https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user'
 ];
