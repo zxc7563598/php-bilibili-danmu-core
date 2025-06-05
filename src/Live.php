@@ -128,7 +128,6 @@ class Live
         $getDanmuInfo = HttpClient::sendGetRequest($url, [
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
-        echo '[返回数据]' . $getDanmuInfo['data'] . PHP_EOL;
         if ($getDanmuInfo['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getDanmuInfo['httpStatus']);
         }

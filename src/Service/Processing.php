@@ -149,8 +149,8 @@ class Processing
         }
         $data = json_decode($response, true);
         return [
-            'bili_ticket' => $data['ticket'],
-            'bili_ticket_expires' => $data['created_at'] + $data['ttl'],
+            'bili_ticket' => $data['data']['ticket'],
+            'bili_ticket_expires' => $data['data']['created_at'] + $data['data']['ttl'],
         ];
     }
 
