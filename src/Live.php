@@ -125,7 +125,6 @@ class Live
         ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
         // 请求数据
         $url = self::$config['getDanmuInfo'] . '?' . $signedParams;
-        echo '[请求数据]' . $url . PHP_EOL;
         $getDanmuInfo = HttpClient::sendGetRequest($url, [
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
