@@ -119,12 +119,13 @@ class Live
         // 获取wbi
         $getWbiKeys = Processing::getWbiKeys($cookie);
         $signedParams = Processing::encWbi([
-            'foo' => '114',
-            'bar' => '514',
-            'baz' => '1919810',
+            'id' => $room_id,
+            'type' => 0,
+            'web_location' => 444.8,
         ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
         // 请求数据
-        $url = self::$config['getDanmuInfo'] . '?id=' . $room_id . '&' . $signedParams;
+        $url = self::$config['getDanmuInfo'] . '?' . $signedParams;
+        echo '[请求数据]' . $url . PHP_EOL;
         $getDanmuInfo = HttpClient::sendGetRequest($url, [
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
