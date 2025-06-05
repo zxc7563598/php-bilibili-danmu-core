@@ -199,4 +199,167 @@ class Processing
         }
         return $decode;
     }
+
+    /**
+     * 获取签名数组
+     * 
+     * @param array $params
+     * @param string $imgKey 
+     * @param string $subKey 
+     * 
+     * @return string 
+     */
+    public static function encWbi(array $params, string $imgKey, string $subKey): string
+    {
+        $mixinKey = self::getMixinKey($imgKey . $subKey);
+        $params['wts'] = time();
+        ksort($params);
+        $chrFilter = "/[!'()*]/";
+        $query = [];
+        foreach ($params as $key => $value) {
+            $value = preg_replace($chrFilter, '', $value);
+            $query[] = urlencode($key) . '=' . urlencode($value);
+        }
+        $queryStr = implode('&', $query);
+        $wRid = md5($queryStr . $mixinKey);
+        return $queryStr . '&w_rid=' . $wRid;
+    }
+
+    /**
+     * 生成 mixin_key
+     * 
+     * @param string $original img_key拼接sub_key
+     * 
+     * @return string 
+     */
+    public static function getMixinKey(string $original): string
+    {
+        $result = '';
+        $mixinKeyEncTab = [
+            46,
+            47,
+            18,
+            2,
+            53,
+            8,
+            23,
+            32,
+            15,
+            50,
+            10,
+            31,
+            58,
+            3,
+            45,
+            35,
+            27,
+            43,
+            5,
+            49,
+            33,
+            9,
+            42,
+            19,
+            29,
+            28,
+            14,
+            39,
+            12,
+            38,
+            41,
+            13,
+            37,
+            48,
+            7,
+            16,
+            24,
+            55,
+            40,
+            61,
+            26,
+            17,
+            0,
+            1,
+            60,
+            51,
+            30,
+            4,
+            22,
+            25,
+            54,
+            21,
+            56,
+            59,
+            6,
+            63,
+            57,
+            62,
+            11,
+            36,
+            20,
+            34,
+            44,
+            52
+        ];
+        foreach ($mixinKeyEncTab as $index) {
+            $result .= $original[$index] ?? '';
+        }
+        return substr($result, 0, 32);
+    }
+
+    /**
+     * 获取 img_key 和 sub_key
+     * 
+     * @param string $cookie cookie
+     * 
+     * @return array 
+     */
+    public static function getWbiKeys($cookie): array
+    {
+        $response = json_decode(self::curlGet(
+            'https://api.bilibili.com/x/web-interface/nav',
+            $cookie
+        ), true);
+        if (!$response || empty($response['data']['wbi_img'])) {
+            throw new Exception('获取 Wbi Key 失败');
+        }
+        $imgUrl = $response['data']['wbi_img']['img_url'];
+        $subUrl = $response['data']['wbi_img']['sub_url'];
+        return [
+            'img_key' => substr(basename($imgUrl), 0, strpos(basename($imgUrl), '.')),
+            'sub_key' => substr(basename($subUrl), 0, strpos(basename($subUrl), '.')),
+        ];
+    }
+
+    /**
+     * 独立GET请求，用于获取 img_key 和 sub_key
+     * 
+     * @param string $url 
+     * @param null|string $cookies 
+     * 
+     * @return string 
+     */
+    private static function curlGet(string $url, ?string $cookies = null): string
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPGET => true,
+            CURLOPT_TIMEOUT => 10,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+            CURLOPT_REFERER => 'https://www.bilibili.com/',
+            CURLOPT_HTTPHEADER => [
+                'Accept: */*',
+                'Accept-Language: zh-CN,zh;q=0.9',
+                'Connection: close',
+            ],
+        ]);
+        if ($cookies) {
+            curl_setopt($ch, CURLOPT_COOKIE, $cookies);
+        }
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
 }

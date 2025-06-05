@@ -119,7 +119,16 @@ class Live
     public static function getInitialWebSocketUrl(int $room_id, string $cookie)
     {
         self::init();
-        $getDanmuInfo = HttpClient::sendGetRequest(self::$config['getDanmuInfo'] . '?id=' . $room_id, [
+        // 获取wbi
+        $getWbiKeys = Processing::getWbiKeys($cookie);
+        $signedParams = Processing::encWbi([
+            'foo' => '114',
+            'bar' => '514',
+            'baz' => '1919810',
+        ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
+        // 请求数据
+        $url = self::$config['getDanmuInfo'] . '?id=' . $room_id . '&' . $signedParams;
+        $getDanmuInfo = HttpClient::sendGetRequest($url, [
             "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
         ], 10, $cookie);
