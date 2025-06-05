@@ -36,9 +36,8 @@ class Live
     {
         self::init();
         $getRealRoomId = HttpClient::sendGetRequest(self::$config['getRealRoomId'] . '?room_id=' . $room_id, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getRealRoomId['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getRealRoomId['httpStatus']);
         }
@@ -63,9 +62,8 @@ class Live
         self::init();
         // 获取直播间信息
         $getRealRoomInfo = HttpClient::sendGetRequest(self::$config['getRealRoomId'] . '?room_id=' . $room_id, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getRealRoomInfo['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getRealRoomInfo['httpStatus']);
         }
@@ -76,9 +74,8 @@ class Live
         // 获取主播个人信息
         if (isset($jsonData['data']['uid'])) {
             $getMasterInfo = HttpClient::sendGetRequest(self::$config['getMasterInfo'] . '?uid=' . $jsonData['data']['uid'], [
-                "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
                 "Origin: https://live.bilibili.com",
-            ], 10, $cookie);
+            ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
             if ($getMasterInfo['httpStatus'] != 200) {
                 throw new \Exception('接口异常响应 httpStatus: ' . $getMasterInfo['httpStatus']);
             }
@@ -129,9 +126,9 @@ class Live
         // 请求数据
         $url = self::$config['getDanmuInfo'] . '?id=' . $room_id . '&' . $signedParams;
         $getDanmuInfo = HttpClient::sendGetRequest($url, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
+        echo '[返回数据]' . $getDanmuInfo['data'] . PHP_EOL;
         if ($getDanmuInfo['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getDanmuInfo['httpStatus']);
         }
@@ -164,9 +161,8 @@ class Live
     {
         self::init();
         $getInfoByUser = HttpClient::sendGetRequest(self::$config['getInfoByUser'] . '?room_id=' . $room_id, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getInfoByUser['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getInfoByUser['httpStatus'] . "详情：" . json_encode($getInfoByUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
@@ -205,10 +201,7 @@ class Live
 
         for ($i = 0; $i < $length; $i += $max_length) {
             $sendMsg = HttpClient::sendPostRequest(self::$config['sendMsg'], [
-                "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
                 "Origin: https://live.bilibili.com/" . $room_id,
-                // "Content-type: application/x-www-form-urlencoded",
-                // "Accept: application/x-www-form-urlencoded"
             ], http_build_query([
                 'color' => $getUserBarrageMsg['color'],
                 'fontsize' => 25,
@@ -219,7 +212,7 @@ class Live
                 'bubble' => $getUserBarrageMsg['bubble'],
                 'csrf_token' => $bili_jct,
                 'csrf' => $bili_jct
-            ]), 10, $cookie);
+            ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
             if ($sendMsg['httpStatus'] != 200) {
                 throw new \Exception('接口异常响应 httpStatus: ' . $sendMsg['httpStatus'] . "详情：" . json_encode($sendMsg, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
             }
@@ -249,13 +242,11 @@ class Live
         self::init();
         $hb = base64_encode('60|' . $room_id . '1|0');
         HttpClient::sendGetRequest(self::$config['webHeartBeat'] . '?pf=web&hb=' . $hb, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com/" . $room_id,
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         HttpClient::sendGetRequest(self::$config['heartBeat'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com/" . $room_id,
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
     }
 
     /**
@@ -272,9 +263,8 @@ class Live
     {
         self::init();
         $getOnlineGoldRank = HttpClient::sendGetRequest(self::$config['getOnlineGoldRank'] . '?ruid=' . $uid . '&roomId=' . $room_id . '&page=1&pageSize=5000', [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
-        ], 10, $cookie);
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getOnlineGoldRank['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus'] . ', 详情：' . json_encode($getOnlineGoldRank, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
@@ -320,10 +310,7 @@ class Live
         $bili_jct = Processing::getBiliJctFromCookie($cookie);
         // 请求接口
         $addSilentUser = HttpClient::sendPostRequest(self::$config['addSilentUser'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com/" . $room_id,
-            // "Content-type: application/x-www-form-urlencoded",
-            // "Accept: application/x-www-form-urlencoded"
         ], http_build_query([
             'room_id' => $room_id,
             'tuid' => $uid,
@@ -331,7 +318,7 @@ class Live
             'mobile_app' => 'web',
             'csrf_token' => $bili_jct,
             'csrf' => $bili_jct
-        ]), 10, $cookie);
+        ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($addSilentUser['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $addSilentUser['httpStatus'] . "详情：" . json_encode($addSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
@@ -362,16 +349,13 @@ class Live
         $bili_jct = Processing::getBiliJctFromCookie($cookie);
         // 请求接口
         $getSilentUserList = HttpClient::sendPostRequest(self::$config['getSilentUserList'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com/" . $room_id,
-            // "Content-type: application/x-www-form-urlencoded",
-            // "Accept: application/x-www-form-urlencoded"
         ], http_build_query([
             'room_id' => $room_id,
             'ps' => $page,
             'csrf_token' => $bili_jct,
             'csrf' => $bili_jct
-        ]), 10, $cookie);
+        ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getSilentUserList['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $getSilentUserList['httpStatus'] . "详情：" . json_encode($getSilentUserList, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
@@ -404,16 +388,13 @@ class Live
         $bili_jct = Processing::getBiliJctFromCookie($cookie);
         // 请求接口
         $delSilentUser = HttpClient::sendPostRequest(self::$config['delSilentUser'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com/" . $room_id,
-            // "Content-type: application/x-www-form-urlencoded",
-            // "Accept: application/x-www-form-urlencoded"
         ], http_build_query([
             'roomid' => $room_id,
             'id' => $black_id,
             'csrf_token' => $bili_jct,
             'csrf' => $bili_jct
-        ]), 10, $cookie);
+        ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($delSilentUser['httpStatus'] != 200) {
             throw new \Exception('接口异常响应 httpStatus: ' . $delSilentUser['httpStatus'] . "详情：" . json_encode($delSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }

@@ -33,7 +33,6 @@ class Login
     {
         self::init();
         $qrcodeGenerate = HttpClient::sendGetRequest(self::$config['qrcodeGenerate'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
         ]);
         if ($qrcodeGenerate['httpStatus'] != 200) {
@@ -66,7 +65,6 @@ class Login
     {
         self::init();
         $qrcodePoll = HttpClient::sendGetRequest(self::$config['qrcodePoll'] . '?qrcode_key=' . $qrcode_key, [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
         ]);
         if ($qrcodePoll['httpStatus'] != 200) {
@@ -100,7 +98,6 @@ class Login
     {
         self::init();
         $getUserInfo = HttpClient::sendGetRequest(self::$config['getUserInfo'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
         ], 10, $cookie);
         if ($getUserInfo['httpStatus'] != 200) {
@@ -128,7 +125,6 @@ class Login
     {
         self::init();
         $getBvid = HttpClient::sendGetRequest(self::$config['getBuvid'], [
-            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
             "Origin: https://live.bilibili.com",
         ]);
         if ($getBvid['httpStatus'] !== 200) {
