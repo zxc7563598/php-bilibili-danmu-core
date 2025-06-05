@@ -109,6 +109,52 @@ class Processing
     }
 
     /**
+     * 根据 cookie 获取 bili_ticket
+     * 
+     * @param string $bili_jct 
+     * @return array 
+     * @throws Exception 
+     */
+    public static function getBiliTicket(string $cookie): array
+    {
+
+        $ts = time(); // 当前时间戳
+        $key = 'XgwSnGZ1p';
+        $message = "ts$ts";
+        // 计算 HMAC-SHA256 签名，返回 hex 格式
+        $hexSign = hash_hmac('sha256', $message, $key);
+        $url = 'https://api.bilibili.com/bapis/bilibili.api.ticket.v1.Ticket/GenWebTicket';
+        // 构造查询参数
+        $params = http_build_query([
+            'key_id' => 'ec02',
+            'hexsign' => $hexSign,
+            'context[ts]' => $ts,
+            'csrf' => self::getBiliJctFromCookie($cookie)
+        ]);
+        // 初始化 cURL 请求
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => "$url?$params",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => [
+                'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0'
+            ]
+        ]);
+        $response = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        if ($status !== 200 || $response === false) {
+            throw new Exception("HTTP error! status: $status");
+        }
+        $data = json_decode($response, true);
+        return [
+            'bili_ticket' => $data['ticket'],
+            'bili_ticket_expires' => $data['created_at'] + $data['ttl'],
+        ];
+    }
+
+    /**
      * 构建 websocket 头部
      * 
      * @param int $len 正文长度
