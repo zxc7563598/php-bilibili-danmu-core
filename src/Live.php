@@ -408,4 +408,35 @@ class Live
             throw new \Exception("解除黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
     }
+
+    /**
+     * 获取直播间大航海数量
+     * 
+     * @param int $uid 主播uid
+     * @param int $room_id 主播房间号
+     * @param string $cookie 用户cookie
+     * 
+     * @return integer 数量
+     */
+    public static function getVipNumbers(int $uid, int $room_id, string $cookie): int
+    {
+        self::init();
+        $getVipNumbers = HttpClient::sendGetRequest(self::$config['getVipNumbers'] . '?ruid=' . $uid . '&roomid=' . $room_id . '&page=1&page_size=20&typ=5&platform=web', [
+            "Origin: https://live.bilibili.com",
+        ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
+        if ($getVipNumbers['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getVipNumbers['httpStatus'] . ', 详情：' . json_encode($getVipNumbers, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        $jsonData = json_decode($getVipNumbers['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("舰长信息获取失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("舰长信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        return $jsonData['data']['info']['num'] ?? -1;
+    }
 }

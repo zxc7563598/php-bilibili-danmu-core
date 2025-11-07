@@ -15,5 +15,6 @@ return [
     'getMasterInfo' => 'https://api.live.bilibili.com/live_user/v1/Master/info',
     'addSilentUser' => 'https://api.live.bilibili.com/xlive/web-ucenter/v1/banned/AddSilentUser',
     'getSilentUserList' => 'https://api.live.bilibili.com/xlive/web-ucenter/v1/banned/GetSilentUserList',
-    'delSilentUser' => 'https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user'
+    'delSilentUser' => 'https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user',
+    'getVipNumbers' => 'https://api.live.bilibili.com/xlive/app-room/v2/guardTab/topListNew'
 ];
