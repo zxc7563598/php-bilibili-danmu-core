@@ -457,14 +457,14 @@ class Live
             'mid' => $uid
         ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
         // 请求数据
-        $url = self::$config['getUserInfo'] . '?' . $signedParams;
-        $getUserInfo = HttpClient::sendGetRequest($url, [
+        $url = self::$config['getStreamerInfo'] . '?' . $signedParams;
+        $getStreamerInfo = HttpClient::sendGetRequest($url, [
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/"));
-        if ($getUserInfo['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getUserInfo['httpStatus'] . ', 详情：' . json_encode($getUserInfo, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        if ($getStreamerInfo['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getStreamerInfo['httpStatus'] . ', 详情：' . json_encode($getStreamerInfo, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
         }
-        $jsonData = json_decode($getUserInfo['data'], true);
+        $jsonData = json_decode($getStreamerInfo['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
         }
