@@ -46,7 +46,7 @@ composer require hejunjie/bililive
 | Live::getSilentUserList()      | 获取直播间禁言用户列表      |
 | Live::delSilentUser()          | 解除直播间禁言              |
 | Live::getVipNumbers()          | 获取直播间大航海数量              |
-| Live::getUserInfo()          | 获取用户基本信息              |
+| Live::getStreamerInfo()          | 获取用户基本信息              |
 
 ### WebSocket
 

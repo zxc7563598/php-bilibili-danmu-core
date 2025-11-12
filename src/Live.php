@@ -482,4 +482,47 @@ class Live
             'sign' => $jsonData['data']['sign'] ?? null
         ];
     }
+
+    /**
+     * 获取用户基本信息
+     * 
+     * @param int $uid 用户uid
+     * @param string $cookie 用户cookie
+     * 
+     * @return array {uid: 用户uid`int`, name: 用户名称`string`, sex: 用户性别`string`, face: 用户头像url`string`, sign: 用户简介`string`}
+     */
+    public static function getStreamerInfo(int $uid, string $cookie): array
+    {
+        self::init();
+        // 获取wbi
+        $getWbiKeys = Processing::getWbiKeys($cookie);
+        $signedParams = Processing::encWbi([
+            'mid' => $uid
+        ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
+        // 请求数据
+        $url = self::$config['getStreamerInfo'] . '?' . $signedParams;
+        $getStreamerInfo = HttpClient::sendGetRequest($url, [
+            "Origin: https://live.bilibili.com",
+        ], 10, $cookie, ("https://live.bilibili.com/"));
+        if ($getStreamerInfo['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getStreamerInfo['httpStatus'] . ', 详情：' . json_encode($getStreamerInfo, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        $jsonData = json_decode($getStreamerInfo['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("用户信息获取失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        return [
+            'mid' => $jsonData['data']['mid'] ?? null,
+            'name' => $jsonData['data']['name'] ?? null,
+            'sex' => $jsonData['data']['sex'] ?? null,
+            'face' => $jsonData['data']['face'] ?? null,
+            'sign' => $jsonData['data']['sign'] ?? null
+        ];
+    }
 }
