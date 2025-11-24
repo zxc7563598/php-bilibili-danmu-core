@@ -441,7 +441,7 @@ class Live
     }
 
     /**
-     * 获取用户基本信息
+     * 获取用户基本信息(停用，会在未来版本中删除)
      * 
      * @param int $uid 用户uid
      * @param string $cookie 用户cookie
@@ -523,6 +523,40 @@ class Live
             'sex' => $jsonData['data']['sex'] ?? null,
             'face' => $jsonData['data']['face'] ?? null,
             'sign' => $jsonData['data']['sign'] ?? null
+        ];
+    }
+
+    /**
+     * 无cookie获取指定uid基本信息
+     * 
+     * @param int $uid 用户uid
+     * 
+     * @return array {uid: 用户uid`int`, name: 用户名称`string`, face: 用户头像`string`}
+     */
+    public static function getMasterInfo(int $uid): array
+    {
+        self::init();
+        $getMasterInfo = HttpClient::sendGetRequest(self::$config['getMasterInfo'] . '?uid=' . $uid, [
+            "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+            "Origin: https://www.bilibili.com",
+        ], 10);
+        if ($getMasterInfo['httpStatus'] != 200) {
+            throw new \Exception('接口异常响应 httpStatus: ' . $getMasterInfo['httpStatus']);
+        }
+        $jsonData = json_decode($getMasterInfo['data'], true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
+        }
+        if (!isset($jsonData['code'])) {
+            throw new \Exception("用户信息获取失败, 无法获取数据");
+        }
+        if ($jsonData['code'] != 0) {
+            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+        }
+        return [
+            'uid' => $jsonData['data']['info']['uid'] ?? null,
+            'name' => $jsonData['data']['info']['uname'] ?? null,
+            'face' => $jsonData['data']['info']['face'] ?? null,
         ];
     }
 }

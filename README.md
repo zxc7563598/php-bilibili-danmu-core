@@ -1,10 +1,8 @@
-
 ## 发行说明
 
 ⚠️ 本项目仅供学习交流使用，禁止用于商业或非法用途。
 
-B站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，包括登录、直播间信息流加密/解密、以及相关的关键方法。适合集成到需要对接 Bilibili 直播间的项目中（弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等）
-
+B 站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，包括登录、直播间信息流加密/解密、以及相关的关键方法。适合集成到需要对接 Bilibili 直播间的项目中（弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等）
 
 ## 安装指南
 
@@ -13,7 +11,6 @@ B站直播 WebSocket 连接的核心组件库，提供简洁的接口实现，�
 ```shell
 composer require hejunjie/bililive
 ```
-
 
 ## 当前支持的方法列表
 
@@ -31,22 +28,22 @@ composer require hejunjie/bililive
 | Login::checkQrcode() | 验证登录信息     |
 | Login::getUserInfo() | 获取用户基本信息 |
 
-
 ### 直播间相关方法
 
-| 方法                           | 说明                        |
-| :----------------------------- | :-------------------------- |
-| Live::getRealRoomId()          | 获取真实房间号              |
-| Live::getRealRoomInfo()        | 获取直播间基本信息          |
-| Live::getInitialWebSocketUrl() | 获取直播间连接信息          |
-| Live::sendMsg()                | 发送弹幕                    |
-| Live::reportLiveHeartbeat()    | web端直播心跳上报(60秒一次) |
-| Live::getOnlineGoldRank()      | 获取直播间在线榜            |
-| Live::addSilentUser()          | 直播间禁言用户              |
-| Live::getSilentUserList()      | 获取直播间禁言用户列表      |
-| Live::delSilentUser()          | 解除直播间禁言              |
-| Live::getVipNumbers()          | 获取直播间大航海数量              |
-| Live::getStreamerInfo()          | 获取用户基本信息              |
+| 方法                           | 说明                            |
+| :----------------------------- | :------------------------------ |
+| Live::getRealRoomId()          | 获取真实房间号                  |
+| Live::getRealRoomInfo()        | 获取直播间基本信息              |
+| Live::getInitialWebSocketUrl() | 获取直播间连接信息              |
+| Live::sendMsg()                | 发送弹幕                        |
+| Live::reportLiveHeartbeat()    | web 端直播心跳上报(60 秒一次)   |
+| Live::getOnlineGoldRank()      | 获取直播间在线榜                |
+| Live::addSilentUser()          | 直播间禁言用户                  |
+| Live::getSilentUserList()      | 获取直播间禁言用户列表          |
+| Live::delSilentUser()          | 解除直播间禁言                  |
+| Live::getVipNumbers()          | 获取直播间大航海数量            |
+| Live::getStreamerInfo()        | 获取用户基本信息                |
+| Live::getMasterInfo()          | 无 cookie 获取指定 uid 基本信息 |
 
 ### WebSocket
 
@@ -62,10 +59,9 @@ composer require hejunjie/bililive
 
 传统的 PHP-FPM 架构确实不太适合即时通讯一类的方向，但随着 Workerman、Swoole 等优秀常驻进程方案的出现，PHP 在这一领域的潜力逐渐显现。
 
-基于此，我决定创建这样一个库，以 PHP 的方式来实现 B站的弹幕连接，希望给需要用 PHP 做类似弹幕姬项目的朋友提供一个简单方便的工具
+基于此，我决定创建这样一个库，以 PHP 的方式来实现 B 站的弹幕连接，希望给需要用 PHP 做类似弹幕姬项目的朋友提供一个简单方便的工具
 
 ---
-
 
 ## 🧩 配套项目
 
@@ -77,11 +73,11 @@ composer require hejunjie/bililive
 
 ---
 
-### Workerman实现B站直播信息流的监听
+### Workerman 实现 B 站直播信息流的监听
 
 > 基础实例，代码自行调整
 
-> 弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等功能于 ` onMessageReceived ` 方法中自行实现
+> 弹幕监控，礼物答谢、定时广告、关注感谢，自动回复等功能于 `onMessageReceived` 方法中自行实现
 
 ```php
 <?php
@@ -131,7 +127,7 @@ class Bilibili
 
     /**
      * 设置 WebSocket 连接的参数和回调
-     * 
+     *
      * @param AsyncTcpConnection $con
      * @param int $roomId
      * @param string $token
@@ -170,7 +166,7 @@ class Bilibili
 
     /**
      * 构建 WebSocket 请求的自定义 HTTP 头
-     * 
+     *
      * @return array
      */
     private function buildHeaders(): array
@@ -210,7 +206,7 @@ class Bilibili
                 $con->send(Bililive\WebSocket::buildHeartbeatPayload());
             }
         });
-        
+
         // 设置 http 心跳包发送定时器，每60秒发送一次
         Timer::add(60, function () use ($con, $roomId) {
             if ($con->getStatus() === AsyncTcpConnection::STATUS_ESTABLISHED) {
