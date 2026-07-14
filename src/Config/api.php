@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
     'qrcodeGenerate' => 'https://passport.bilibili.com/x/passport-login/web/qrcode/generate',
     'qrcodePoll' => 'https://passport.bilibili.com/x/passport-login/web/qrcode/poll',
@@ -17,5 +19,6 @@ return [
     'getSilentUserList' => 'https://api.live.bilibili.com/xlive/web-ucenter/v1/banned/GetSilentUserList',
     'delSilentUser' => 'https://api.live.bilibili.com/banned_service/v1/Silent/del_room_block_user',
     'getVipNumbers' => 'https://api.live.bilibili.com/xlive/app-room/v2/guardTab/topListNew',
-    'getStreamerInfo' => 'https://api.bilibili.com/x/space/wbi/acc/info'
+    'getStreamerInfo' => 'https://api.bilibili.com/x/space/wbi/acc/info',
+    'biliTicketKey' => 'XgwSnGZ1p',
 ];

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\Bililive\Service;
 
 use Exception;
@@ -55,71 +57,77 @@ class Processing
     }
 
     /**
-     * 通过cookie获取uid
-     * 
+     * 解析 cookie 字符串为键值对数组
+     *
      * @param string $cookie 用户cookie
-     * 
+     *
+     * @return array<string, string>
+     */
+    private static function parseCookie(string $cookie): array
+    {
+        $result = [];
+        foreach (explode(';', $cookie) as $pair) {
+            $pair = trim($pair);
+            if ($pair !== '' && str_contains($pair, '=')) {
+                [$key, $value] = explode('=', $pair, 2);
+                $result[$key] = $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * 通过cookie获取uid
+     *
+     * @param string $cookie 用户cookie
+     *
      * @return int uid
      */
     public static function getUidFromCookie(string $cookie): int
     {
-        $pairs = explode(";", $cookie);
-        $result = [];
-        foreach ($pairs as $pair) {
-            list($key, $value) = explode("=", $pair, 2); // 用 = 分割键和值
-            $result[$key] = $value;
-        }
-        return isset($result['DedeUserID']) ? $result['DedeUserID'] : 0;
+        $parsed = self::parseCookie($cookie);
+        return isset($parsed['DedeUserID']) ? (int) $parsed['DedeUserID'] : 0;
     }
 
     /**
      * 通过cookie获取用户buvid3
-     * 
+     *
      * @param string $cookie 用户cookie
-     * 
+     *
      * @return string buvid3
      */
     public static function getBuvid3FromCookie(string $cookie): string
     {
-        $pairs = explode(";", $cookie);
-        $result = [];
-        foreach ($pairs as $pair) {
-            list($key, $value) = explode("=", $pair, 2); // 用 = 分割键和值
-            $result[$key] = $value;
-        }
-        return isset($result['buvid3']) ? $result['buvid3'] : '';
+        $parsed = self::parseCookie($cookie);
+        return $parsed['buvid3'] ?? '';
     }
 
     /**
      * 通过cookie获取用户bili_jct
-     * 
+     *
      * @param string $cookie 用户cookie
-     * 
+     *
      * @return string bili_jct
      */
     public static function getBiliJctFromCookie(string $cookie): string
     {
-        $pairs = explode(";", $cookie);
-        $result = [];
-        foreach ($pairs as $pair) {
-            list($key, $value) = explode("=", $pair, 2); // 用 = 分割键和值
-            $result[$key] = $value;
-        }
-        return isset($result['bili_jct']) ? $result['bili_jct'] : '';
+        $parsed = self::parseCookie($cookie);
+        return $parsed['bili_jct'] ?? '';
     }
 
     /**
      * 根据 cookie 获取 bili_ticket
      * 
-     * @param string $bili_jct 
+     * @param string $cookie 用户cookie
+     * 
      * @return array 
      * @throws Exception 
      */
     public static function getBiliTicket(string $cookie): array
     {
-
         $ts = time(); // 当前时间戳
-        $key = 'XgwSnGZ1p';
+        $config = require __DIR__ . '/../Config/api.php';
+        $key = $config['biliTicketKey'];
         $message = "ts$ts";
         // 计算 HMAC-SHA256 签名，返回 hex 格式
         $hexSign = hash_hmac('sha256', $message, $key);
@@ -191,9 +199,9 @@ class Processing
      * 
      * @return array|false {packet_len:整包长度`int`, header_len:头部长度`int`, protocol_version:协议版本`int`, opcode:操作码`int`, magic_number:sequence(不重要)`int`, payload: 正文数据`string`} | bool
      */
-    public static function unpack(string $data)
+    public static function unpack(string $data): array|false
     {
-        return @unpack('Npacket_len/nheader_len/nprotocol_version/Nopcode/Nmagic_number/a*payload', $data);
+        return unpack('Npacket_len/nheader_len/nprotocol_version/Nopcode/Nmagic_number/a*payload', $data);
     }
 
     /**
@@ -230,9 +238,9 @@ class Processing
      * 
      * @return array|false []
      */
-    public static function zlib(string $data)
+    public static function zlib(string $data): array|false
     {
-        $decompressedBody = @gzuncompress($data);
+        $decompressedBody = gzuncompress($data);
         $off = 0;
         $max = strlen(substr($decompressedBody, 16));
         $decode = [];
@@ -356,11 +364,11 @@ class Processing
     /**
      * 获取 img_key 和 sub_key
      * 
-     * @param string $cookie cookie
+     * @param string $cookie 用户cookie
      * 
      * @return array 
      */
-    public static function getWbiKeys($cookie): array
+    public static function getWbiKeys(string $cookie): array
     {
         $response = json_decode(self::curlGet(
             'https://api.bilibili.com/x/web-interface/nav',

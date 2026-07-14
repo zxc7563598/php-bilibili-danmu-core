@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\Bililive\Service;
 
 /**
@@ -9,7 +11,7 @@ namespace Hejunjie\Bililive\Service;
 class HttpClient
 {
 
-    private static $userAgents = [
+    private static array $userAgents = [
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 Edg/124.0.0.0',
         'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.4 Safari/605.1.15',
@@ -25,7 +27,7 @@ class HttpClient
      * @param string $cookie cookie
      * 
      * @return array {httpStatus:Http Status 状态码`int`, data:返回内容`string`, header:返回header`string`} 
-     * @throws Exception
+     * @throws \Exception
      */
     public static function sendGetRequest(string $url, array $headers = [], int $timeout = 10, string $cookie = '', string $referer = 'https://www.bilibili.com/'): array
     {
@@ -78,7 +80,7 @@ class HttpClient
      * @param string $cookie cookie
      * 
      * @return array {httpStatus:Http Status 状态码`int`, data:返回内容`string`, header:返回header`string`} 
-     * @throws Exception
+     * @throws \Exception
      */
     public static function sendPostRequest(string $url, array $headers = [], mixed $data = null, int $timeout = 10, string $cookie = '', string $referer = 'https://www.bilibili.com/'): array
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\Bililive;
 
 use Exception;
@@ -13,7 +15,7 @@ use Hejunjie\Bililive\Service\Processing;
 class Live
 {
 
-    private static $config;
+    private static ?array $config = null;
 
     // 初始化配置
     private static function init(): void
@@ -30,7 +32,7 @@ class Live
      * @param string $cookie 用户cookie
      * 
      * @return int 真实房间号
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function getRealRoomId(int $room_id, string $cookie): int
     {
@@ -55,7 +57,7 @@ class Live
      * @param string $cookie 用户cookie
      * 
      * @return array {code:接口状态`int`, msg:失败后的信息`string`, data:成功后的数据`array`} 
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function getRealRoomInfo(int $room_id, string $cookie): array
     {
@@ -111,9 +113,9 @@ class Live
      * @param string $cookie 用户cookie
      * 
      * @return array {token:认证密钥`string`, host:服务器域名`string`, port:TCP端口`int`, ws_port:WS端口`int`, wss_port:WSS端口`int`} 
-     * @throws Exception 
+     * @throws \Exception 
      */
-    public static function getInitialWebSocketUrl(int $room_id, string $cookie)
+    public static function getInitialWebSocketUrl(int $room_id, string $cookie): array
     {
         self::init();
         // 获取wbi
@@ -154,7 +156,7 @@ class Live
      * @param string $cookie 
      * 
      * @return array {mode:mode`int`, color:字体颜色`int`, length:长度`int`, bubble:bubble`int`}
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function getUserBarrageMsg(int $room_id, string $cookie): array
     {
@@ -163,7 +165,7 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getInfoByUser['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getInfoByUser['httpStatus'] . "详情：" . json_encode($getInfoByUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $getInfoByUser['httpStatus'] . "详情：" . json_encode($getInfoByUser, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getInfoByUser['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -188,7 +190,7 @@ class Live
      * @param string $message 需要发送的消息
      * 
      * @return void 
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function sendMsg(int $room_id, string $cookie, string $message): void
     {
@@ -213,7 +215,7 @@ class Live
                 'csrf' => $bili_jct
             ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
             if ($sendMsg['httpStatus'] != 200) {
-                throw new \Exception('接口异常响应 httpStatus: ' . $sendMsg['httpStatus'] . "详情：" . json_encode($sendMsg, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+                throw new \Exception('接口异常响应 httpStatus: ' . $sendMsg['httpStatus'] . "详情：" . json_encode($sendMsg, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
             }
             $jsonData = json_decode($sendMsg['data'], true);
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -223,7 +225,7 @@ class Live
                 throw new \Exception("弹幕发送失败, 无法获取数据");
             }
             if ($jsonData['code'] != 0) {
-                throw new \Exception("弹幕发送失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+                throw new \Exception("弹幕发送失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
             }
         }
     }
@@ -256,7 +258,7 @@ class Live
      * @param string $cookie 用户cookie
      * 
      * @return array {online_num: 在线人数`int`, online_item: 每个在线的信息`array`}
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function getOnlineGoldRank(int $uid, int $room_id, string $cookie): array
     {
@@ -265,7 +267,7 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getOnlineGoldRank['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus'] . ', 详情：' . json_encode($getOnlineGoldRank, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $getOnlineGoldRank['httpStatus'] . ', 详情：' . json_encode($getOnlineGoldRank, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getOnlineGoldRank['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -275,7 +277,7 @@ class Live
             throw new \Exception("高能榜获取失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("高能榜获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("高能榜获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $onlineNum = $jsonData['data']['onlineNum'];
         $onlineItem = [];
@@ -319,7 +321,7 @@ class Live
             'csrf' => $bili_jct
         ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($addSilentUser['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $addSilentUser['httpStatus'] . "详情：" . json_encode($addSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $addSilentUser['httpStatus'] . "详情：" . json_encode($addSilentUser, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($addSilentUser['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -329,7 +331,7 @@ class Live
             throw new \Exception("添加黑名单失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("添加黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("添加黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
     }
 
@@ -356,7 +358,7 @@ class Live
             'csrf' => $bili_jct
         ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getSilentUserList['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getSilentUserList['httpStatus'] . "详情：" . json_encode($getSilentUserList, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $getSilentUserList['httpStatus'] . "详情：" . json_encode($getSilentUserList, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getSilentUserList['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -366,7 +368,7 @@ class Live
             throw new \Exception("黑名单列表获取失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("黑名单列表获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("黑名单列表获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         // 返回数据
         return $jsonData['data'];
@@ -395,7 +397,7 @@ class Live
             'csrf' => $bili_jct
         ]), 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($delSilentUser['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $delSilentUser['httpStatus'] . "详情：" . json_encode($delSilentUser, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $delSilentUser['httpStatus'] . "详情：" . json_encode($delSilentUser, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($delSilentUser['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -405,7 +407,7 @@ class Live
             throw new \Exception("解除黑名单失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("解除黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("解除黑名单失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
     }
 
@@ -425,7 +427,7 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/" . $room_id));
         if ($getVipNumbers['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getVipNumbers['httpStatus'] . ', 详情：' . json_encode($getVipNumbers, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $getVipNumbers['httpStatus'] . ', 详情：' . json_encode($getVipNumbers, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getVipNumbers['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -435,52 +437,23 @@ class Live
             throw new \Exception("舰长信息获取失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("舰长信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("舰长信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         return $jsonData['data']['info']['num'] ?? -1;
     }
 
     /**
      * 获取用户基本信息(停用，会在未来版本中删除)
-     * 
+     *
      * @param int $uid 用户uid
      * @param string $cookie 用户cookie
-     * 
+     *
      * @return array {uid: 用户uid`int`, name: 用户名称`string`, sex: 用户性别`string`, face: 用户头像url`string`, sign: 用户简介`string`}
+     * @deprecated 请使用 getStreamerInfo() 替代
      */
     public static function getUserInfo(int $uid, string $cookie): array
     {
-        self::init();
-        // 获取wbi
-        $getWbiKeys = Processing::getWbiKeys($cookie);
-        $signedParams = Processing::encWbi([
-            'mid' => $uid
-        ], $getWbiKeys['img_key'], $getWbiKeys['sub_key']);
-        // 请求数据
-        $url = self::$config['getStreamerInfo'] . '?' . $signedParams;
-        $getStreamerInfo = HttpClient::sendGetRequest($url, [
-            "Origin: https://live.bilibili.com",
-        ], 10, $cookie, ("https://live.bilibili.com/"));
-        if ($getStreamerInfo['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getStreamerInfo['httpStatus'] . ', 详情：' . json_encode($getStreamerInfo, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
-        }
-        $jsonData = json_decode($getStreamerInfo['data'], true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new \Exception("接口响应了无效的 JSON 数据: " . json_last_error_msg());
-        }
-        if (!isset($jsonData['code'])) {
-            throw new \Exception("用户信息获取失败, 无法获取数据");
-        }
-        if ($jsonData['code'] != 0) {
-            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
-        }
-        return [
-            'mid' => $jsonData['data']['mid'] ?? null,
-            'name' => $jsonData['data']['name'] ?? null,
-            'sex' => $jsonData['data']['sex'] ?? null,
-            'face' => $jsonData['data']['face'] ?? null,
-            'sign' => $jsonData['data']['sign'] ?? null
-        ];
+        return self::getStreamerInfo($uid, $cookie);
     }
 
     /**
@@ -505,7 +478,7 @@ class Live
             "Origin: https://live.bilibili.com",
         ], 10, $cookie, ("https://live.bilibili.com/"));
         if ($getStreamerInfo['httpStatus'] != 200) {
-            throw new \Exception('接口异常响应 httpStatus: ' . $getStreamerInfo['httpStatus'] . ', 详情：' . json_encode($getStreamerInfo, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception('接口异常响应 httpStatus: ' . $getStreamerInfo['httpStatus'] . ', 详情：' . json_encode($getStreamerInfo, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         $jsonData = json_decode($getStreamerInfo['data'], true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -515,7 +488,7 @@ class Live
             throw new \Exception("用户信息获取失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         return [
             'mid' => $jsonData['data']['mid'] ?? null,
@@ -551,7 +524,7 @@ class Live
             throw new \Exception("用户信息获取失败, 无法获取数据");
         }
         if ($jsonData['code'] != 0) {
-            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE + JSON_UNESCAPED_SLASHES + JSON_PRESERVE_ZERO_FRACTION));
+            throw new \Exception("用户信息获取失败, 详情：" . json_encode($jsonData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION));
         }
         return [
             'uid' => $jsonData['data']['info']['uid'] ?? null,

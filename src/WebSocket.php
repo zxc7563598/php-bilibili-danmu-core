@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\Bililive;
 
 use Exception;
@@ -57,34 +59,34 @@ class WebSocket
     /**
      * 解构响应数据包
      * 
-     * @param mixed $data 
+     * @param mixed $data 数据包
      * 
      * @return array 
      */
-    public static function parseResponsePayload($data): array
+    public static function parseResponsePayload(mixed $data): array
     {
+        $result = [];
         $body = Processing::unpack($data);
         if (isset($body['protocol_version'])) {
-            switch ($body['protocol_version']) {
-                case 0: // 普通包 (正文不使用压缩)
-                    $result['type'] = '普通包 (正文不使用压缩)';
-                    $body['payload'] = json_decode($body['payload'], true);
-                    $result['payload'] = [$body];
-                    break;
-                case 1: // 心跳及认证包 (正文不使用压缩)
-                    $result['type'] = '心跳及认证包 (正文不使用压缩)';
-                    $result['payload'] = [];
-                    break;
-                case 2: // 普通包 (正文使用 zlib 压缩)
-                    $result['type'] = '加密包 (正文使用 zlib 压缩)';
-                    $result['payload'] = Processing::zlib($body['payload']);
-                    break;
-                case 3: // 普通包 (使用 brotli 压缩的多个带文件头的普通包)
-                    // 3. 解压 Brotli 压缩的正文
-                    $result['type'] = '加密包 (正文使用 brotli 压缩)';
-                    $result['payload'] = Processing::brotli($body['payload']);
-                    break;
-            }
+            $result = match ((int) $body['protocol_version']) {
+                0 => [ // 普通包 (正文不使用压缩)
+                    'type' => '普通包 (正文不使用压缩)',
+                    'payload' => [array_merge($body, ['payload' => json_decode($body['payload'], true)])],
+                ],
+                1 => [ // 心跳及认证包 (正文不使用压缩)
+                    'type' => '心跳及认证包 (正文不使用压缩)',
+                    'payload' => [],
+                ],
+                2 => [ // 普通包 (正文使用 zlib 压缩)
+                    'type' => '加密包 (正文使用 zlib 压缩)',
+                    'payload' => Processing::zlib($body['payload']),
+                ],
+                3 => [ // 普通包 (使用 brotli 压缩的多个带文件头的普通包)
+                    'type' => '加密包 (正文使用 brotli 压缩)',
+                    'payload' => Processing::brotli($body['payload']),
+                ],
+                default => $result,
+            };
         }
         return $result;
     }

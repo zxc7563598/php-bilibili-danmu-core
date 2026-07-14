@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Hejunjie\Bililive;
 
 use Exception;
@@ -13,7 +15,7 @@ use Hejunjie\Bililive\Service\Processing;
 class Login
 {
 
-    private static $config;
+    private static ?array $config = null;
 
     // 初始化配置
     private static function init(): void
@@ -27,7 +29,7 @@ class Login
      * 获取扫描二维码
      * 
      * @return array {url:用以生成二维码的URL`string`, qrcode_key:扫码登录秘钥`string`} 
-     * @throws Exception 
+     * @throws \Exception 
      */
     public static function getQrcode(): array
     {
@@ -90,6 +92,7 @@ class Login
 
     /**
      * 获取用户基本信息
+     * 
      * @param string $cookie 用户登录cookie
      * 
      * @return array {is_login:是否登录`bool`, uid:用户uid`int`, uname:用户名称`string`, face:用户头像URL`string`} 
