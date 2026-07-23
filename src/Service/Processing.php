@@ -271,7 +271,7 @@ class Processing
         $chrFilter = "/[!'()*]/";
         $query = [];
         foreach ($params as $key => $value) {
-            $value = preg_replace($chrFilter, '', $value);
+            $value = preg_replace($chrFilter, '', (string) $value);
             $query[] = urlencode($key) . '=' . urlencode($value);
         }
         $queryStr = implode('&', $query);
