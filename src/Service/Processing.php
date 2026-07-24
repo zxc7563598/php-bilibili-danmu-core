@@ -218,6 +218,9 @@ class Processing
             throw new \Exception("未安装 brotli 扩展");
         }
         $decompressedBody = brotli_uncompress($data);
+        if ($decompressedBody === false) {
+            throw new \Exception("brotli 解压失败");
+        }
         $off = 0;
         $max = strlen(substr($decompressedBody, 16));
         $decode = [];
@@ -233,14 +236,17 @@ class Processing
 
     /**
      * zlib 解压
-     * 
+     *
      * @param string $data 正文数据
-     * 
+     *
      * @return array|false []
      */
     public static function zlib(string $data): array|false
     {
-        $decompressedBody = gzuncompress($data);
+        $decompressedBody = @gzuncompress($data);
+        if ($decompressedBody === false) {
+            return false;
+        }
         $off = 0;
         $max = strlen(substr($decompressedBody, 16));
         $decode = [];
