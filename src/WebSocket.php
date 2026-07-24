@@ -39,6 +39,9 @@ class WebSocket
             'type' => 2,
             'key' => $token
         ]);
+        if ($packet === false) {
+            throw new \Exception("认证包 JSON 编码失败: " . json_last_error_msg());
+        }
         // 获取头部
         $buildHeader = Processing::buildHeader(strlen($packet), 1, 7);
         return $buildHeader . $packet;
